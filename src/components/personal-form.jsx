@@ -1,16 +1,15 @@
 
-const PersonalForm = () => {
+const PersonalForm = ({ questions }) => {
     return(
         <form>
             <div class="mb-3">
-                <label for="name" className="form-label">Name</label>
-                <input type="text" className="form-control" id="name" />
-                <label for="phone" className="form-label">Phone Number</label>
-                <input type="text" className="form-control" id="phone" />
-                <label for="email" className="form-label">Email Address</label>
-                <input type="text" className="form-control" id="email" />
-                <label for="linkedIn" className="form-label">LinkedIn Profile</label>
-                <input type="text" className="form-control" id="linkedIn" />
+                {questions.map((question, idx) => (
+                    <>
+                    <label for={question.id} className="form-label">{question.label}</label>
+                    <input type={question.type} className="form-control" id={question.id} />
+                    </>
+                ))}
+
             </div>
             <div className="d-grid gap-2 d-md-flex justify-content-md-end">
                 <button className="btn btn-primary" type="button">Next</button>
