@@ -1,21 +1,25 @@
 
-const PersonalForm = ({ questions }) => {
+const PersonalForm = ({ questions, onInputChange }) => {
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        onInputChange(id, value);  // Pass the input ID and value to the parent
+      };
     return(
         <form>
-            <div class="mb-3">
-                {questions.map((question, idx) => (
-                    <>
-                    <label for={question.id} className="form-label">{question.label}</label>
-                    <input type={question.type} className="form-control" id={question.id} />
-                    </>
-                ))}
-
-            </div>
-            <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button className="btn btn-primary" type="button">Next</button>
-            </div>
-        </form>
-    )
+            {questions.map(question => (
+                <div key={question.id}>
+                    <label className="form-label">{question.label}</label>
+                    <input
+                    className="form-control"
+                    id={question.id}
+                    type={question.type}
+                    onChange={handleChange}  // Call handleChange on input change
+                    />
+                </div>
+            ))}
+    </form>
+  );
+    
 }
 
 export default PersonalForm
