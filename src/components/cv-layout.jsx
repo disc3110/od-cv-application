@@ -1,10 +1,9 @@
-const CVLayout = ({ personalData, expirienceData }) => {
-    console.log(personalData)
+const CVLayout = ({ cvData }) => {
     return(
         <div className="container p-2 m-3">
             <h1>Name</h1>
-            <p>{personalData.name}</p>
-            <p>{personalData.phone}</p>
+            <p>{cvData.name}</p>
+            <p>{cvData.phone}</p>
         </div>
     )
 }
