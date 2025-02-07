@@ -41,7 +41,7 @@ function App() {
   ];
 
   const [step, setStep] = useState(0); // Current form section step
-  const [cvData, setCVData] = useState({ jobs: [{}] }); // Initial state with an empty job entry
+  const [cvData, setCVData] = useState({ jobs: [{}], educations:[{}] }); // Initial state with an empty job entry
 
   // Handle form input changes for all sections
   const handleInfoChange = (sectionKey, id, value, index = null) => {
@@ -51,6 +51,13 @@ function App() {
         const updatedJobs = [...prevData.jobs];
         updatedJobs[index] = { ...updatedJobs[index], [id]: value };
         return { ...prevData, jobs: updatedJobs };
+      } else if (sectionKey === 'education' && index !== null) {
+        const updatedEducations = [...prevData.educations];
+        updatedEducations[index] = {
+          ...updatedEducations[index],
+          [id]: value
+        };
+        return { ...prevData, educations: updatedEducations };
       } else {
         return { ...prevData, [id]: value };
       }
@@ -70,12 +77,29 @@ function App() {
     }));
   };
 
+  // Add new education entry
+  const addEducation = () => {
+    setCVData(prevData => ({
+      ...prevData,
+      educations: [...prevData.educations, {}] // push new empty education
+    }));
+  };
+
   // Current form section based on the step
   const currentSection = formSections[step];
 
+  if (step >= formSections.length) {
+    // Show only CVLayout after finishing all steps
+    return (
+      <div className='container bg-light p-4'>
+        <CVLayout cvData={cvData} />;
+      </div>
+  )
+  }
+
   return (
-    <div className='container p-4'>
-      <div className='row vh-75'>
+    <div className='container p-3'>
+      <div className='row vh-75 bg-light p-3'>
         <div className='col-4 border border-black rounded p-2'>
           <h1>{currentSection?.title}</h1>
           {step === 1 ? (
@@ -91,7 +115,21 @@ function App() {
               <button onClick={addJob} className="btn btn-secondary mt-2">Add Another Job</button>
               <button onClick={nextStep} className="btn btn-primary mt-2">Next</button>
             </div>
-          ) : (
+          ) : step === 2 ? (
+            <div>
+              {cvData.educations.map((edu, index) => (
+                <div key={index}>
+                  <PersonalForm
+                    questions={currentSection.questions}
+                    onInputChange={(id, value) => handleInfoChange('education', id, value, index)}
+                  />
+                </div>
+              ))}
+              <button onClick={addEducation} className="btn btn-secondary mt-2">Add Another Education</button>
+              <button onClick={nextStep} className="btn btn-primary mt-2">Next</button>
+            </div>
+          ) :
+          (
             <div>
               <PersonalForm
                 questions={currentSection.questions}
@@ -103,7 +141,7 @@ function App() {
             </div>
           )}
         </div>
-        <div className='col-8'>
+        <div className='col-8 p-1'>
           <CVLayout cvData={cvData} />
         </div>
       </div>
