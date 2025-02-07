@@ -3,7 +3,6 @@ import PersonalForm from './components/personal-form';
 import CVLayout from './components/cv-layout';
 
 function App() {
-  // Define questions and titles for each step in one place
   const formSections = [
     {
       title: "Personal Information",
@@ -41,17 +40,34 @@ function App() {
     }
   ];
 
-  const [step, setStep] = useState(0); // Step starts at 0 for the first form
-  const [cvData, setCVData] = useState({});
+  const [step, setStep] = useState(0); // Current form section step
+  const [cvData, setCVData] = useState({ jobs: [{}] }); // Initial state with an empty job entry
 
-  // Handle next step
-  const nextStep = () => {
-    setStep((prevStep) => prevStep + 1);
+  // Handle form input changes for all sections
+  const handleInfoChange = (sectionKey, id, value, index = null) => {
+    setCVData(prevData => {
+      if (sectionKey === 'jobs' && index !== null) {
+        // Update specific job entry
+        const updatedJobs = [...prevData.jobs];
+        updatedJobs[index] = { ...updatedJobs[index], [id]: value };
+        return { ...prevData, jobs: updatedJobs };
+      } else {
+        return { ...prevData, [id]: value };
+      }
+    });
   };
 
-  // Handle data change in the form
-  const handleInfoChange = (id, value) => {
-    setCVData(prevData => ({ ...prevData, [id]: value }));
+  // Handle next step navigation
+  const nextStep = () => {
+    setStep(prevStep => prevStep + 1);
+  };
+
+  // Add a new job entry
+  const addJob = () => {
+    setCVData(prevData => ({
+      ...prevData,
+      jobs: [...prevData.jobs, {}] // Add an empty job object
+    }));
   };
 
   // Current form section based on the step
@@ -62,15 +78,29 @@ function App() {
       <div className='row vh-75'>
         <div className='col-4 border border-black rounded p-2'>
           <h1>{currentSection?.title}</h1>
-          {currentSection ? (
+          {step === 1 ? (
             <div>
-              <PersonalForm questions={currentSection.questions} onInputChange={handleInfoChange} />
+              {cvData.jobs.map((job, index) => (
+                <div key={index}>
+                  <PersonalForm
+                    questions={currentSection.questions}
+                    onInputChange={(id, value) => handleInfoChange('jobs', id, value, index)}
+                  />
+                </div>
+              ))}
+              <button onClick={addJob} className="btn btn-secondary mt-2">Add Another Job</button>
+              <button onClick={nextStep} className="btn btn-primary mt-2">Next</button>
+            </div>
+          ) : (
+            <div>
+              <PersonalForm
+                questions={currentSection.questions}
+                onInputChange={(id, value) => handleInfoChange('general', id, value)}
+              />
               <button onClick={nextStep} className="btn btn-primary mt-2">
                 {step === formSections.length - 1 ? "Finish" : "Next"}
               </button>
             </div>
-          ) : (
-            <div>Thanks!</div>
           )}
         </div>
         <div className='col-8'>
